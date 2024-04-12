@@ -1,25 +1,32 @@
 #include <Adafruit_NeoPixel.h>
 
-#define NUM_LEDS 47
+#define NUM_LEDS 200
 #define DATA_PIN 2
 boolean debug = true;
 
 float counter = 0;
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, DATA_PIN, NEO_GRB + NEO_KHZ800);
-int sine[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47};
+
+int sine[NUM_LEDS];
 
 void setup() {
   pinMode(7,INPUT_PULLUP);
-  strip.begin();
   Serial.begin(9600);
-  strip.setBrightness(50);
+  strip.begin();
+  strip.setBrightness(255);
+  
+  for ( int p = 0 ; p <= strip.numPixels() ; p++){
+    sine[p]= p;
+    Serial.println(sine[p]); 
+  }
 }
 
 void loop() { 
   while (digitalRead(7) == LOW){
     rainbow(30); 
-      if (debug == true){
+
+    if (debug == true){
       Serial.println("knap tryk");
     }
     delay(10); 
