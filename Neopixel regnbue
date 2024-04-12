@@ -2,34 +2,54 @@
 // How many leds in your strip?
 #define NUM_LEDS 47
 #define DATA_PIN 2
+
+
+
 float counter = 0;
   // Define the array of leds
-
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, DATA_PIN, NEO_GRB + NEO_KHZ800);
-
 int sine[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47};
 
-void setup() {  
+void setup() {
+  pinMode(7,INPUT_PULLUP);
   strip.begin();
   Serial.begin(9600);
-  strip.setBrightness(50);
+  strip.setBrightness(0);
 }
 
 void loop() { 
-
-  rainbow(30);
+  boolean btnPress = digitalRead(7);
+ // 
+  while (digitalRead(7) == LOW){
+    strip.setBrightness(50);
+    rainbow(30);
+    Serial.println("knap tryk");
+  }
+  while (digitalRead(7) == HIGH ){
+    strip.setBrightness(0);
+    
+  }
+  delay(10); 
 }
+
 
 void rainbow(uint8_t wait) {
   uint16_t i, j;
-  for(j=0; j<256; j++) {
+  for(j=0; j<1; j++) {
     for(i=0; i<strip.numPixels(); i++) {
         strip.setPixelColor(i, Wheel((i*(13/2)+j) & 255));
         strip.setPixelColor(sine[(i + strip.numPixels() - 8) % strip.numPixels()], 0); // Erase 'tail'
         strip.show();
         delay(wait);
       }
-    }  
+    } 
+    while ( digitalRead(7) == HIGH){
+      for( int n = strip.numPixels() - 8 ; n <= strip.numPixels(); n++){
+        strip.setPixelColor(n ,0);
+        strip.show();
+        delay(wait);
+      }
+    }
 }
 
 // Input a value 0 to 255 to get a color value.
