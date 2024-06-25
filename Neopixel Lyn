@@ -1,68 +1,55 @@
-//importing the neopixel library
 #include <Adafruit_NeoPixel.h>
 
-//defining pins and variables
-#define NUM_LEDS 47
+#define NUM_LEDS 100
 #define DATA_PIN 2
-// variable for checking button state 
 uint8_t btnPrev;
 
-// neopixel variable 
+boolean debug = true;
+
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, DATA_PIN, NEO_GRB + NEO_KHZ800);
 
-
 void setup() {
-// button input set to pullup, since interference can create a false button press if we set it to a normal input
   pinMode(7,INPUT_PULLUP);
   btnPrev = digitalRead(7);
   Serial.begin(9600);
-// setting brightness and initializing the strip
   strip.setBrightness(50);
-  strip.begin(); 
+  strip.begin();
   
 }
 
 void loop() {
-  // looping the lightning method 
+  
   lightning();
 }
 
 void lightning(){
-// creating a randomizer to give a blinking effect for the lightning 
   int r = 0;
   r = random (10);
-// if the randomizer is 9 then it changes the brightness to create a blinking effect 
   if ( r == 9){
-    strip.setBrightness(50);
+    strip.setBrightness(100);
     delay(15);
   } else{
-    strip.setBrightness(150);
+    strip.setBrightness(255);
   }
-// calling the blink method 
+
     blink();
-// filling the neopixel with the yellow lightning color using a for loop
     for ( int i = 0 ; i <= strip.numPixels() ; i++){
-      strip.setPixelColor(i, 253, 208, 35);
+      strip.setPixelColor(i, 255, 157, 0 );
       strip.show();
       Serial.println(r);
     }
-// delay is set to slow down the blinking effect 
     delay(10);
 }
 
 void blink (){
-// creating a unsigned 8 bit int for the button
   uint8_t btn = digitalRead(7);
-// for loop that cycles 4 times to give a lightning flash effect when a switch is activated 
   for (int i = 0 ; i <= 3 ; i++){
-// checking if button is pressed, and the previous input was unpressed 
-// to ensure you cant keep the flash going by holding down the button
-    if (btn == LOW && btnPrev == HIGH){ 
+    if (btn == LOW && btnPrev == HIGH){
       delay(50);
       strip.setBrightness(50);
       strip.show();
       delay(50);
-      strip.setBrightness(250);
+      strip.setBrightness(255);
       strip.show();
     }
   }
