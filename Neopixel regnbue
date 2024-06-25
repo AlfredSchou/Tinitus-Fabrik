@@ -1,11 +1,15 @@
 #include <Adafruit_NeoPixel.h>
 
-// defining variables 
-#define NUM_LEDS 200
-#define DATA_PIN 2
-boolean debug = false;
 
-// storing a counter variable 
+
+#define NUM_LEDS 152
+#define DATA_PIN 2
+boolean debug = true;
+
+int lag = 51;
+
+int pixelSpeed = 12;
+
 float counter = 0;
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, DATA_PIN, NEO_GRB + NEO_KHZ800);
@@ -18,7 +22,7 @@ void setup() {
   strip.begin();
   strip.setBrightness(255);
   
-  for ( int p = 0 ; p <= strip.numPixels() ; p++){
+  for ( int p = 3 ; p <= strip.numPixels() ; p++){
     sine[p]= p;
     Serial.println(sine[p]); 
   }
@@ -37,36 +41,34 @@ void loop() {
 
 void rainbow(uint8_t wait) {
   uint16_t i, j;
-// single loop through the colorstrip
-  for(j=0; j<1; j++) {
-    for(i=0; i<strip.numPixels(); i++) {
-        strip.setPixelColor(i, Wheel((i*(13/2)+j) & 255)); // setting each pixel as the color of the rainbow, offset by the value j
-        strip.setPixelColor(sine[(i + strip.numPixels() - 8) % strip.numPixels()], 0); // using a sine wave function to turn off leds to create a moving light on the strip
+  for(j = 0 ; j < 1 ; j++) {
+    for(i=3; i<strip.numPixels(); i++) {
+        strip.setPixelColor(i, Wheel(((i * 255/152) + j) & 255));
+        strip.setPixelColor(sine[(i + strip.numPixels() - lag) % strip.numPixels()], 0);
         strip.show();
-        delay(wait);
+        delay(wait - pixelSpeed);
       }
     } 
-// turning of the last 8 pixels on the strip to create a smooth transition from the end of the strip to the start 
     while ( digitalRead(7) == HIGH){
-      for( int n = strip.numPixels() - 8 ; n <= strip.numPixels(); n++){ // turning off the pixels for the strip until n reaches the same size as the pixel amount 
-        strip.setPixelColor(n ,0); using the same wait vairable to ensure the timing of the rainbow cycle and the corresponding leds turning off is the same 
+      for( int n = strip.numPixels() - lag ; n <= strip.numPixels(); n++){
+        strip.setPixelColor(n ,0);
         strip.show();
-        delay(wait);
+        delay(wait - pixelSpeed);
       }
     }
 }
 
-uint32_t Wheel(byte WheelPos) { // creating a wheel method to cycle the colors 
-  if(WheelPos < 85) { // if wheelpos is under 85 generate colors from red to green
-    return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0); // increasing the red value and decreasing the green value 
+
+uint32_t Wheel(byte WheelPos) {
+  if(WheelPos < 85) {
+    return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
   } 
-  else if(WheelPos < 170) {// If WheelPos is between 85 and 169, generate colors from green to blue
-    WheelPos -= 85; // offsetting the value to create smooth transition
-    return strip.Color(255 - WheelPos * 3, 0, WheelPos * 3); // increasing blue color and decreasing green component 
+  else if(WheelPos < 170) {
+    WheelPos -= 85;
+    return strip.Color(255 - WheelPos * 3, 0, WheelPos * 3);
   } 
   else {
-// otherwise if wheelpos is 170 or higher generate colors from blue to red 
-    WheelPos -= 170; // offsetting wheelpos for a smooth transition
-    return strip.Color(0, WheelPos * 3, 255 - WheelPos * 3); // decreasing blue color and increasing red color
+    WheelPos -= 170;
+    return strip.Color(0, WheelPos * 3, 255 - WheelPos * 3);
   }
 }
