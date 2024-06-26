@@ -22,7 +22,7 @@ void setup() {
   strip.begin();
   strip.setBrightness(255);
   
-  for ( int p = 3 ; p <= strip.numPixels() ; p++){
+  for ( int p = 0 ; p <= strip.numPixels() ; p++){
     sine[p]= p;
     Serial.println(sine[p]); 
   }
@@ -42,7 +42,7 @@ void loop() {
 void rainbow(uint8_t wait) {
   uint16_t i, j;
   for(j = 0 ; j < 1 ; j++) {
-    for(i=3; i<strip.numPixels(); i++) {
+    for(i=0; i<strip.numPixels(); i++) {
         strip.setPixelColor(i, Wheel(((i * 255/152) + j) & 255));
         strip.setPixelColor(sine[(i + strip.numPixels() - lag) % strip.numPixels()], 0);
         strip.show();
